@@ -1,13 +1,13 @@
 package com.api.backend.model;
 
-public class Greeting {
+public class BroadcastMessage {
 
     private String content;
 
-    public Greeting() {
+    public BroadcastMessage() {
     }
 
-    public Greeting(String content) {
+    public BroadcastMessage(String content) {
         this.content = content;
     }
 

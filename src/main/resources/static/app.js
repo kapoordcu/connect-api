@@ -9,7 +9,7 @@ function setConnected(connected) {
     else {
         $("#conversation").hide();
     }
-    $("#greetings").html("");
+    $("#replies").html("");
 }
 
 function connect() {
@@ -18,8 +18,8 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/communication', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/topic/communication', function (command) {
+            showResponse(JSON.parse(command.body).content);
         });
     });
 }
@@ -30,22 +30,34 @@ function disconnect() {
     }
     setConnected(false);
     console.log("Disconnected");
+
 }
 
-function sendName() {
+function sendCommand() {
     stompClient.send("/app/listen", {}, JSON.stringify({'name': $("#name").val()}));
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showResponse(message) {
+    $("#replies").append("<tr><td>" + message + "</td></tr>");
+}
+
+function disableCommandButton() {
+    $("#name").attr("disabled", "disabled");
+    $("#send").attr("disabled", "disabled");
+}
+
+function enableCommandButton() {
+    $("#name").removeAttr("disabled");
+    $("#send").removeAttr("disabled");
 }
 
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
+    disableCommandButton();
+    $( "#connect" ).click(function() { connect(); enableCommandButton(); });
+    $( "#disconnect" ).click(function() { disconnect(); disableCommandButton();});
+    $( "#send" ).click(function() { sendCommand(); });
 });
 

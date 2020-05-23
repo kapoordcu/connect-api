@@ -1,13 +1,13 @@
 package com.api.backend.model;
 
-public class HelloMessage {
+public class Command {
 
     private String name;
 
-    public HelloMessage() {
+    public Command() {
     }
 
-    public HelloMessage(String name) {
+    public Command(String name) {
         this.name = name;
     }
 
