@@ -9,10 +9,9 @@ import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class CommandController {
-
     @MessageMapping("/listen")
     @SendTo("/topic/communication")
-    public BroadcastMessage greeting(Command command) throws Exception {
+    public BroadcastMessage messageReceived(Command command) throws Exception {
         return new BroadcastMessage("Hello, " + HtmlUtils.htmlEscape(command.getName()) + "!");
     }
 }
