@@ -20,6 +20,9 @@ Configured Spring for WebSocket and STOMP messaging
 ### How Spring session is maintained
 Spring session is maintained during websocket connection through HandshakeInterceptor. 
 
+### How all commands are handled
+For every command a CommandStrategy is created, depending on the command entered by the client, system identifies the entered strategy and execute the method accordingly
+It will be easy to add more commands in future by using that strategy.
 
 ## References
 * [A Guide to the Java API for WebSocket](https://www.baeldung.com/java-websockets)

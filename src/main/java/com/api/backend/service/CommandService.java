@@ -1,38 +1,64 @@
 package com.api.backend.service;
 
 import com.api.backend.config.CommandPropertyConfig;
+import com.api.backend.message.*;
 import com.api.backend.model.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class CommandService {
-    private Set<String> commandSet = new HashSet<>();
-    private CommandPropertyConfig propertyConfig;
+    private Map<String, CommandStrategy> commandMap = new HashMap();
+    private CommandPropertyConfig config;
+    private Pattern regexPattern;
+    private CommandContext commandContext = new CommandContext(new UnknownCommandStrategy());
 
     @Autowired
     public CommandService(CommandPropertyConfig propertyConfig) {
-        this.propertyConfig = propertyConfig;
-        fillCommandSet(propertyConfig, commandSet);
+        this.config = propertyConfig;
+        fillCommandMap();
     }
 
-    private void fillCommandSet(CommandPropertyConfig config, Set<String> commandSet) {
-        commandSet.addAll(Arrays.asList(config.getClientIntroduction(), config.getClientExit(),
-                config.getAddNode() , config.getAddEdge(), config.getRemoveEdge(),
-                config.getRemoveNode(), config.getShortestPath() , config.getCloserThan()));
+    private void fillCommandMap() {
+        commandMap.put(config.getClientIntroduction(), new ClientIntroductionStrategy());
+        commandMap.put(config.getClientExit(), new ClientExitStrategy());
+        commandMap.put(config.getAddNode(), new AddNodeStrategy());
+        commandMap.put(config.getAddEdge(), new AddEdgeStrategy());
+        commandMap.put(config.getRemoveNode(), new RemoveNodeStrategy());
+        commandMap.put(config.getRemoveEdge(), new RemoveEdgeStrategy());
+        commandMap.put(config.getShortestPath(), new ShortestPathStraregy());
+        commandMap.put(config.getCloserThan(), new WeightCommandStrategy());
     }
 
     public String sendMessageToClient(Command command) {
-        if(validCommand(command.getName())) {
-
-        }
-        return propertyConfig.getUnknownCommand();
+        CommandStrategy strategy = identifyValidCommand(command.getName());
+        System.out.println(strategy);
+        commandContext.setStrategy(strategy);
+        return strategy.executeCommand(command);
     }
 
-    private boolean validCommand(String name) {
-        return false;
+    private CommandStrategy identifyValidCommand(String command) {
+        List<CommandStrategy> identifiedCommandList = commandMap.entrySet()
+                .stream()
+                .map(commandValue -> {
+                    Pattern compile = Pattern.compile(commandValue.getKey().toLowerCase());
+                    Matcher matcher = compile.matcher(command.toLowerCase());
+                    if (matcher.matches()) {
+                        return commandValue.getValue();
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if(identifiedCommandList.size()==0) {
+            return new UnknownCommandStrategy();
+        }
+        return identifiedCommandList.get(0);
     }
 
 }
