@@ -14,7 +14,10 @@ a server that accepts commands from multiple browser clients. In response, the s
 * The @MessageMapping annotation ensures that, if a message is sent to the /listen destination, the getUCommand(ClientCommand clientCommand) method is called
 * The return value is broadcasted to all subscribers of /topic/communication, as specified in the @SendTo annotation.
 
-### WebSocketConfig.java: Configure Spring for WebSocket and STOMP messaging
+### WebSocketConfig
+Configured Spring for WebSocket and STOMP messaging
+
+### How Spring session is maintained
 Spring session is maintained during websocket connection through HandshakeInterceptor. 
 
 
