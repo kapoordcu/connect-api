@@ -15,7 +15,7 @@ a server that accepts commands from multiple browser clients. In response, the s
 * The return value is broadcasted to all subscribers of /topic/communication, as specified in the @SendTo annotation.
 
 ### WebSocketConfig.java: Configure Spring for WebSocket and STOMP messaging
-The following guides illustrate how to use some features concretely:
+Spring session is maintained during websocket connection through HandshakeInterceptor. 
 
 
 ## References

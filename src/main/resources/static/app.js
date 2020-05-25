@@ -13,12 +13,12 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/websocket-endpoint');
+    var socket = new SockJS('/ws-endpoint');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/communication', function (command) {
+        stompClient.subscribe('/topic/reply', function (command) {
             showResponse(JSON.parse(command.body).content);
         });
     });
@@ -30,7 +30,6 @@ function disconnect() {
     }
     setConnected(false);
     console.log("Disconnected");
-
 }
 
 function sendCommand() {
