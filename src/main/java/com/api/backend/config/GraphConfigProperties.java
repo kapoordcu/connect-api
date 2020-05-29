@@ -7,13 +7,13 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:graph.properties")
 public class GraphConfigProperties {
-    @Value("${graph.error}")
+    @Value("${graph.error:ERROR}")
     private String errorLabel;
 
-    @Value("${graph.added}")
+    @Value("${graph.added:ADDED}")
     private String addedLabel;
 
-    @Value("${graph.removed}")
+    @Value("${graph.removed:REMOVED}")
     private String removedLabel;
 
     public String getErrorLabel() {

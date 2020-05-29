@@ -1,31 +1,48 @@
 package com.api.backend.graph;
 
-import java.util.Objects;
+import java.util.*;
 
 public class Node {
-    String name;
+    private String name;
+    Map<Node, Integer> neighbors = new HashMap<>();
 
     public Node(String name) {
         this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return Objects.equals(name, node.name);
+    public void addNeighbor(Node neighbor, int distance) {
+        neighbors.put(neighbor, distance);
+    }
+
+    public void removeNeighbor(Node neighbor) {
+        neighbors.remove(neighbor);
+    }
+
+    public Node[] getNeighbors() {
+        Node[] result = new Node[neighbors.size()];
+        neighbors.keySet().toArray(result);
+        return result;
+    }
+
+    public int getNeighborDistance(Node node) {
+        return neighbors.get(node);
+    }
+
+    public String toString() {
+        return this.name;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return name.hashCode();
     }
 
     @Override
-    public String toString() {
-        return "Node{" +
-                "name='" + name + '\'' +
-                '}';
+    public boolean equals(Object another) {
+        return name.equals(((Node) another).name);
+    }
+
+    public String getName() {
+        return name;
     }
 }

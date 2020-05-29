@@ -1,54 +1,80 @@
 package com.api.backend.graph;
 
 import com.api.backend.config.GraphConfigProperties;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 
-@Component
 public class Graph {
+    private Map<String, Node> nodes = new HashMap<String, Node>();
     private static final Logger LOGGER = LoggerFactory.getLogger(Graph.class);
-    private Map<Node, List<Edge>> graph = new HashMap<>();
+    private GraphConfigProperties graphConfigProperties = new GraphConfigProperties();
 
-    @Autowired
-    private GraphConfigProperties graphConfigProperties;
+    public Graph() {}
+
+    private String addNode(String name) {
+        Node node = nodes.get(name);
+        if (node != null) {
+            return graphConfigProperties.getErrorLabel() + ": NODE ALREADY EXISTS.";
+        }
+        LOGGER.info("Adding a node with name '" + name + "'");
+        nodes.put(name, new Node(name));
+        return "NODE " + graphConfigProperties.getAddedLabel();
+    }
+
+    public String removeNode(String name) {
+        Node node = new Node(name);
+        if (node != null) {
+            return graphConfigProperties.getErrorLabel() + ": NODE NOT FOUND.";
+        }
+        LOGGER.info("Removing a node with name '" + name + "'");
+        nodes.remove(name);
+        return "NODE " + graphConfigProperties.getRemovedLabel();
+    }
 
     public String addEdge(String src, String dest, Integer weight) {
-        LOGGER.info("Adding an edge from " + src + " to " + dest + " with weight " + weight);
-        String opMessageOnEdgeAddition = checkParametersForAddingEdge(graphConfigProperties.getAddedLabel(), src, dest, weight);
-        if(!graphConfigProperties.getErrorLabel().contains(opMessageOnEdgeAddition)) {
-            Edge newEdge = new Edge(src, dest, weight);
-            graph.get(new Node(src)).add(newEdge);
+        String opMessageOnEdgeAddition = checkParametersForAddingEdge("ADDED", src, dest, weight);
+        if(!"ERROR".contains(opMessageOnEdgeAddition)) {
+            Node srcNode = nodes.get(src);
+            Node destNode = nodes.get(dest);
+            LOGGER.info("Adding an edge from " + src + " to " + dest + " with weight " + weight);
+            srcNode.addNeighbor(destNode, weight);
+            destNode.addNeighbor(srcNode, weight);
+
+            nodes.put(src, srcNode);
+            nodes.put(dest, destNode);
         }
         return opMessageOnEdgeAddition;
     }
 
     public String removeEdge(String src, String dest) {
-        LOGGER.info("Removing an edge from " + src + " to " + dest);
-        String opMessageOnEdgeRemoval = checkParametersForAddingEdge(graphConfigProperties.getRemovedLabel(), src, dest, 10);
-        if(!graphConfigProperties.getErrorLabel().contains(opMessageOnEdgeRemoval)) {
-            Node srcNode = new Node(src);
-            List<Edge> edgesFromSource = graph.get(srcNode);
-            for (Edge edge : edgesFromSource) {
-                if(edge.getDest().equals(dest)) {
-                    edgesFromSource.remove(edge);
-                }
-            }
+        String opMessageOnEdgeAddition = checkParametersForAddingEdge("REMOVED", src, dest, 10);
+        if(!"ERROR".contains(opMessageOnEdgeAddition)) {
+            Node srcNode = nodes.get(src);
+            Node destNode = nodes.get(dest);
+            LOGGER.info("Removing an edge from " + src + " to " + dest);
+            srcNode.removeNeighbor(destNode);
+            destNode.removeNeighbor(srcNode);
+            nodes.remove(src);
+            nodes.remove(dest);
         }
-        return opMessageOnEdgeRemoval;
+        return opMessageOnEdgeAddition;
     }
-
+    
     private String checkParametersForAddingEdge(String operation, String src, String dest, Integer weight) {
         String opMessageOnEdgeAddition = "EDGE " + operation;
-        Node srcNode = new Node(src);
-        Node destNode = new Node(dest);
-        if(!graph.containsKey(srcNode)) {
+        Node srcNode = nodes.get(src);
+        Node destNode = nodes.get(dest);
+        if(srcNode == null) {
             opMessageOnEdgeAddition = graphConfigProperties.getErrorLabel() + ": NODE '" + src + "' NOT FOUND";
-        } else if(!graph.containsKey(destNode)) {
+        } else if(destNode == null) {
             opMessageOnEdgeAddition =  graphConfigProperties.getErrorLabel() + ": NODE '" + dest + "' NOT FOUND";
         } else if(weight<0) {
             opMessageOnEdgeAddition =  graphConfigProperties.getErrorLabel() + ": Weight '" +  weight + "' is negative.";
@@ -56,44 +82,53 @@ public class Graph {
         return opMessageOnEdgeAddition;
     }
 
-    public String addNode(String name) {
-        LOGGER.info("Adding a node with name '" + name + "'");
-        Node node = new Node(name);
-        if(graph.containsKey(node)) {
-           return graphConfigProperties.getErrorLabel() + ": NODE ALREADY EXISTS.";
+    public int shortestPath(String sourceNode, String destNode) {
+        Map<String, String> parents = new HashMap<>();
+        Set<String> visited = new HashSet<>();
+        PriorityQueue<PathNode> priorityQueue = new PriorityQueue<PathNode>();
+
+        PathNode start = new PathNode(sourceNode, null, 0);
+        priorityQueue.add(start);
+
+        while (priorityQueue.size() > 0) {
+            PathNode currentPathNode = priorityQueue.remove();
+
+            if (!visited.contains(currentPathNode.getName())) {
+                Node currentNode = nodes.get(currentPathNode.getName());
+                parents.put(currentPathNode.getName(), currentPathNode.getParent());
+                visited.add(currentPathNode.getName());
+
+                if (currentPathNode.getName().equals(destNode)) {
+                    return calculatePathCost(parents, destNode);
+                }
+
+                Node[] neighbors = nodes.get(currentPathNode.getName()).getNeighbors();
+                for (int i = 0; i < neighbors.length; i++) {
+                    Node neighbor = neighbors[i];
+                    int distance2root = currentPathNode.getDistance2root() + currentNode.getNeighborDistance(neighbor);
+                    priorityQueue.add(new PathNode(neighbor.getName(), currentPathNode.getName(), distance2root));
+                }
+            }
         }
-        graph.put(node, new LinkedList<>());
-        return "NODE " + graphConfigProperties.getAddedLabel();
+        return Integer.MAX_VALUE;
     }
 
-    public String removeNode(String name) {
-        LOGGER.info("Removing a node with name '" + name + "'");
-        Node node = new Node(name);
-        if(!graph.containsKey(node)) {
-            return graphConfigProperties.getErrorLabel() + ": NODE NOT FOUND.";
+    private int calculatePathCost(Map<String, String> parents, String endNodeName) {
+        List<String> path = new ArrayList<>();
+        String node = endNodeName;
+        while (node != null) {
+            path.add(0, node);
+            String parent = parents.get(node);
+            node = parent;
         }
-        graph.remove(node);
-        return "NODE " + graphConfigProperties.getRemovedLabel();
+        return calculatePathCost(path);
     }
-//
-//    @Test
-//    public void addNodesAndEdges() {
-//        Graph start = new Graph();
-//        System.out.println(start.addNode("X"));
-//        System.out.println(start.addNode("Y"));
-//        System.out.println(start.addNode("X"));
-//        System.out.println(start.addNode("Z"));
-//        System.out.println(start.removeNode("Z"));
-//        System.out.println(start.removeNode("Z"));
-//
-//
-//        System.out.println(start.addEdge("X", "Y", 10));
-//        System.out.println(start.addEdge("X", "X", 8));
-//        System.out.println(start.addEdge("X", "Q", 5));
-//        System.out.println(start.addEdge("Y", "X", 5));
-//        start.graph.entrySet()
-//                .stream()
-//                .map(entry-> entry.getKey())
-//                .forEach(System.out::println);
-//    }
+
+    private int calculatePathCost(List<String> path) {
+        int pathCost = 0;
+        for (int i = 0; i < path.size()-1; i++) {
+            pathCost += nodes.get(path.get(i)).getNeighborDistance(nodes.get(path.get(i+1)));
+        }
+        return pathCost;
+    }
 }
