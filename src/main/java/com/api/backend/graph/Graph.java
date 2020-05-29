@@ -47,7 +47,7 @@ public class Graph {
 
     public String addEdge(String src, String dest, Integer weight) {
         String opMessageOnEdgeAddition = checkParametersForAddingEdge("ADDED", src, dest, weight);
-        if(!"ERROR".contains(opMessageOnEdgeAddition)) {
+        if(!opMessageOnEdgeAddition.contains("ERROR")) {
             Node srcNode = nodes.get(src);
             Node destNode = nodes.get(dest);
             LOGGER.info("Adding an edge from " + src + " to " + dest + " with weight " + weight);
