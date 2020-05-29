@@ -1,8 +1,10 @@
 package com.api.backend.graph;
 
-import com.api.backend.config.GraphConfigProperties;
+import com.api.backend.config.CommandPropertyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,31 +14,35 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+@Component
 public class Graph {
     private Map<String, Node> nodes = new HashMap<String, Node>();
     private static final Logger LOGGER = LoggerFactory.getLogger(Graph.class);
-    private GraphConfigProperties graphConfigProperties = new GraphConfigProperties();
+    private CommandPropertyConfig config;
 
-    public Graph() {}
+    @Autowired
+    public Graph(CommandPropertyConfig propertyConfig) {
+        this.config = propertyConfig;
+    }
 
-    private String addNode(String name) {
+    public String addNode(String name) {
         Node node = nodes.get(name);
         if (node != null) {
-            return graphConfigProperties.getErrorLabel() + ": NODE ALREADY EXISTS.";
+            return config.getErrorLabel() + ": NODE ALREADY EXISTS.";
         }
         LOGGER.info("Adding a node with name '" + name + "'");
         nodes.put(name, new Node(name));
-        return "NODE " + graphConfigProperties.getAddedLabel();
+        return "NODE " + config.getAddedLabel();
     }
 
     public String removeNode(String name) {
-        Node node = new Node(name);
-        if (node != null) {
-            return graphConfigProperties.getErrorLabel() + ": NODE NOT FOUND.";
+        Node node = nodes.get(name);
+        if (node == null) {
+            return config.getErrorLabel() + ": NODE NOT FOUND.";
         }
         LOGGER.info("Removing a node with name '" + name + "'");
         nodes.remove(name);
-        return "NODE " + graphConfigProperties.getRemovedLabel();
+        return "NODE " + config.getRemovedLabel();
     }
 
     public String addEdge(String src, String dest, Integer weight) {
@@ -67,17 +73,17 @@ public class Graph {
         }
         return opMessageOnEdgeAddition;
     }
-    
+
     private String checkParametersForAddingEdge(String operation, String src, String dest, Integer weight) {
         String opMessageOnEdgeAddition = "EDGE " + operation;
         Node srcNode = nodes.get(src);
         Node destNode = nodes.get(dest);
         if(srcNode == null) {
-            opMessageOnEdgeAddition = graphConfigProperties.getErrorLabel() + ": NODE '" + src + "' NOT FOUND";
+            opMessageOnEdgeAddition = config.getErrorLabel() + ": NODE '" + src + "' NOT FOUND";
         } else if(destNode == null) {
-            opMessageOnEdgeAddition =  graphConfigProperties.getErrorLabel() + ": NODE '" + dest + "' NOT FOUND";
+            opMessageOnEdgeAddition =  config.getErrorLabel() + ": NODE '" + dest + "' NOT FOUND";
         } else if(weight<0) {
-            opMessageOnEdgeAddition =  graphConfigProperties.getErrorLabel() + ": Weight '" +  weight + "' is negative.";
+            opMessageOnEdgeAddition =  config.getErrorLabel() + ": Weight '" +  weight + "' is negative.";
         }
         return opMessageOnEdgeAddition;
     }

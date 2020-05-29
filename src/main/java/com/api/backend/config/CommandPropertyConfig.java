@@ -33,6 +33,15 @@ public class CommandPropertyConfig {
     @Value("${unknown.command}")
     private String unknownCommand;
 
+    @Value("${graph.error:ERROR}")
+    private String errorLabel;
+
+    @Value("${graph.added:ADDED}")
+    private String addedLabel;
+
+    @Value("${graph.removed:REMOVED}")
+    private String removedLabel;
+
     public String getClientIntroduction() {
         return clientIntroduction;
     }
@@ -67,5 +76,17 @@ public class CommandPropertyConfig {
 
     public String getUnknownCommand() {
         return unknownCommand;
+    }
+
+    public String getErrorLabel() {
+        return errorLabel;
+    }
+
+    public String getAddedLabel() {
+        return addedLabel;
+    }
+
+    public String getRemovedLabel() {
+        return removedLabel;
     }
 }

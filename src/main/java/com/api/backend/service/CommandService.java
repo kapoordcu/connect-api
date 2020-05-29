@@ -1,6 +1,7 @@
 package com.api.backend.service;
 
 import com.api.backend.config.CommandPropertyConfig;
+import com.api.backend.graph.Graph;
 import com.api.backend.message.*;
 import com.api.backend.model.Command;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,13 @@ public class CommandService {
     private Map<String, CommandStrategy> commandMap = new HashMap();
     private CommandPropertyConfig config;
     private Pattern regexPattern;
-    private CommandContext commandContext = new CommandContext(new UnknownCommandStrategy());
+    private Graph graph;
+    private CommandContext commandContext = new CommandContext(new UnknownCommandStrategy(), graph);
 
     @Autowired
     public CommandService(CommandPropertyConfig propertyConfig) {
         this.config = propertyConfig;
+        graph = new Graph(config);
         fillCommandMap();
     }
 
@@ -37,9 +40,8 @@ public class CommandService {
 
     public String sendMessageToClient(Command command) {
         CommandStrategy strategy = identifyValidCommand(command.getName());
-        System.out.println(strategy);
         commandContext.setStrategy(strategy);
-        return strategy.executeCommand(command);
+        return strategy.executeCommand(graph, command);
     }
 
     private CommandStrategy identifyValidCommand(String command) {
