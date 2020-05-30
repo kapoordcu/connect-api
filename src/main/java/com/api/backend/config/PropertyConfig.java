@@ -9,6 +9,9 @@ public class PropertyConfig {
     @Value("${client.introduction}")
     private String clientIntroduction;
 
+    @Value("${client.welcome: Hi! }")
+    private String welcomeMessage;
+
     @Value("${client.exit}")
     private String clientExit;
 
@@ -77,6 +80,10 @@ public class PropertyConfig {
 
     @Value("${message.info.removing.edge:Removing an edge}")
     private String removingEdgeInfo;
+
+    public String getWelcomeMessage() {
+        return welcomeMessage;
+    }
 
     public String getClientIntroduction() {
         return clientIntroduction;

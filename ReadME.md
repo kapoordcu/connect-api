@@ -1,8 +1,17 @@
 # Getting Started
 
 ### What is build
-a server that accepts commands from multiple browser clients. In response, the server will push the response into a queue to which the clients are subscribed.
+A server that accepts commands from multiple browser clients. In response, the server will push the response into a common queue backed by the websocket broker topic to which the clients are subscribed.
+The application also handles sessionId and user info through localstorage
 
+## Phase 1
+### Handling Session ID and User's Info and active session time
+Since the info for session is specific and should not be broadcasted to the subscriber topic, all info is stored in the browser's localstorage
+* On 'Connect' click, a random UUID is generated and stored as JSESSION in localstorage, localstorage also stores the start as timestamp
+* On 'Disconnect' click the localstorage is cleared and message is printed for active time.
+* A separate javascript class Store is used to handle the localstorage.
+* The 'Hi, I am <name>' will be also treated same as 'I am <name>' or 'Hola, I am <name>' using regex
+* Look for phase1.png for sample run screen for phase 1
 
 ### STOMP
 * Simple Text Oriented Message Protocol is used for message-oriented middleware communications. It provides an interoperable wire format that allows STOMP clients to talk with any message broker supporting the protocol.

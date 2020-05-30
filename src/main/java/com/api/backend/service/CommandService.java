@@ -28,7 +28,7 @@ public class CommandService {
     }
 
     private void fillCommandMap() {
-        commandMap.put(config.getClientIntroduction(), new ClientIntroductionStrategy());
+        commandMap.put(config.getClientIntroduction(), new ClientWelcomeStrategy());
         commandMap.put(config.getClientExit(), new ClientExitStrategy());
         commandMap.put(config.getAddNode(), new AddNodeStrategy());
         commandMap.put(config.getAddEdge(), new AddEdgeStrategy());

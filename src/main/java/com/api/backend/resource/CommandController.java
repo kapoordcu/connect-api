@@ -27,8 +27,6 @@ public class CommandController {
 
     @MessageMapping("/listen")
     public void processMessageFromClient(@Payload Command command, SimpMessageHeaderAccessor headerAccessor) throws Exception {
-        String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-        headerAccessor.setSessionId(sessionId);
         messagingTemplate.convertAndSend(wsTopic + wsReply,
                 new BroadcastMessage(commandService.sendMessageToClient(command)));
     }
