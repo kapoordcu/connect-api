@@ -1,6 +1,6 @@
 package com.api.backend.service;
 
-import com.api.backend.config.CommandPropertyConfig;
+import com.api.backend.config.PropertyConfig;
 import com.api.backend.graph.Graph;
 import com.api.backend.message.*;
 import com.api.backend.model.Command;
@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 @Service
 public class CommandService {
     private Map<String, CommandStrategy> commandMap = new HashMap();
-    private CommandPropertyConfig config;
+    private PropertyConfig config;
     private Pattern regexPattern;
     private Graph graph;
     private CommandContext commandContext = new CommandContext(new UnknownCommandStrategy(), graph);
 
     @Autowired
-    public CommandService(CommandPropertyConfig propertyConfig) {
+    public CommandService(PropertyConfig propertyConfig) {
         this.config = propertyConfig;
         graph = new Graph(config);
         fillCommandMap();

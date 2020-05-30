@@ -1,6 +1,6 @@
 package com.api.backend.graph;
 
-import com.api.backend.config.CommandPropertyConfig;
+import com.api.backend.config.PropertyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,39 +18,39 @@ import java.util.Set;
 public class Graph {
     private Map<String, Node> nodes = new HashMap<String, Node>();
     private static final Logger LOGGER = LoggerFactory.getLogger(Graph.class);
-    private CommandPropertyConfig config;
+    private PropertyConfig config;
 
     @Autowired
-    public Graph(CommandPropertyConfig propertyConfig) {
+    public Graph(PropertyConfig propertyConfig) {
         this.config = propertyConfig;
     }
 
     public String addNode(String name) {
         Node node = nodes.get(name);
         if (node != null) {
-            return config.getErrorLabel() + ": NODE ALREADY EXISTS.";
+            return config.getErrorLabel() + config.getDelimiter() + config.getNodeExists();
         }
-        LOGGER.info("Adding a node with name '" + name + "'");
+        LOGGER.info(String.format(config.getAddingNodeInfo(), name));
         nodes.put(name, new Node(name));
-        return "NODE " + config.getAddedLabel();
+        return config.getNode() + config.getAddedLabel();
     }
 
     public String removeNode(String name) {
         Node node = nodes.get(name);
         if (node == null) {
-            return config.getErrorLabel() + ": NODE NOT FOUND.";
+            return config.getErrorLabel() + config.getDelimiter() + config.getNodeNotFound();
         }
-        LOGGER.info("Removing a node with name '" + name + "'");
+        LOGGER.info(String.format(config.getRemovingNodeInfo(), name));
         nodes.remove(name);
-        return "NODE " + config.getRemovedLabel();
+        return config.getNode() + config.getRemovedLabel();
     }
 
     public String addEdge(String src, String dest, Integer weight) {
-        String opMessageOnEdgeAddition = checkParametersForAddingEdge("ADDED", src, dest, weight);
-        if(!opMessageOnEdgeAddition.contains("ERROR")) {
+        String opMessageOnEdgeAddition = checkParametersForAddingEdge(config.getAddedLabel(), src, dest, weight);
+        if(!opMessageOnEdgeAddition.contains(config.getErrorLabel())) {
             Node srcNode = nodes.get(src);
             Node destNode = nodes.get(dest);
-            LOGGER.info("Adding an edge from " + src + " to " + dest + " with weight " + weight);
+            LOGGER.info(String.format(config.getAddingEdgeInfo(), src, dest, weight));
             srcNode.addNeighbor(destNode, weight);
             destNode.addNeighbor(srcNode, weight);
 
@@ -61,34 +61,38 @@ public class Graph {
     }
 
     public String removeEdge(String src, String dest) {
-        String opMessageOnEdgeAddition = checkParametersForAddingEdge("REMOVED", src, dest, 10);
-        if(!"ERROR".contains(opMessageOnEdgeAddition)) {
+        String opMessageOnEdgeRemoval = checkParametersForAddingEdge(config.getRemovedLabel(), src, dest, 10);
+        if(!opMessageOnEdgeRemoval.contains(config.getErrorLabel())) {
             Node srcNode = nodes.get(src);
             Node destNode = nodes.get(dest);
-            LOGGER.info("Removing an edge from " + src + " to " + dest);
+            LOGGER.info(String.format(config.getRemovingEdgeInfo(), src, dest));
             srcNode.removeNeighbor(destNode);
             destNode.removeNeighbor(srcNode);
             nodes.remove(src);
             nodes.remove(dest);
         }
-        return opMessageOnEdgeAddition;
+        return opMessageOnEdgeRemoval;
     }
 
     private String checkParametersForAddingEdge(String operation, String src, String dest, Integer weight) {
-        String opMessageOnEdgeAddition = "EDGE " + operation;
+        String opMessageOnEdgeAddition = config.getEdge() + operation;
         Node srcNode = nodes.get(src);
         Node destNode = nodes.get(dest);
         if(srcNode == null) {
-            opMessageOnEdgeAddition = config.getErrorLabel() + ": NODE '" + src + "' NOT FOUND";
+            opMessageOnEdgeAddition = config.getErrorLabel() + config.getDelimiter() + config.getNode() + src + config.getNotFound();
         } else if(destNode == null) {
-            opMessageOnEdgeAddition =  config.getErrorLabel() + ": NODE '" + dest + "' NOT FOUND";
+            opMessageOnEdgeAddition =  config.getErrorLabel() + config.getDelimiter() + config.getNode()  + dest + config.getNotFound();
         } else if(weight<0) {
-            opMessageOnEdgeAddition =  config.getErrorLabel() + ": Weight '" +  weight + "' is negative.";
+            opMessageOnEdgeAddition =  config.getErrorLabel() + config.getDelimiter() + config.getWeight() +  weight + config.getNegWeight();
         }
         return opMessageOnEdgeAddition;
     }
 
     public int shortestPath(String sourceNode, String destNode) {
+        if(nodes.get(sourceNode)==null
+                || nodes.get(destNode)==null ) {
+            return Integer.MAX_VALUE;
+        }
         Map<String, String> parents = new HashMap<>();
         Set<String> visited = new HashSet<>();
         PriorityQueue<PathNode> priorityQueue = new PriorityQueue<PathNode>();
@@ -116,7 +120,7 @@ public class Graph {
                 }
             }
         }
-        return Integer.MAX_VALUE;
+        return 0;
     }
 
     private int calculatePathCost(Map<String, String> parents, String endNodeName) {

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class CommandController {
-    @Value("${ws.topic}")
+    @Value("${ws.topic:/topic}")
     private String wsTopic;
 
-    @Value("${ws.reply}")
+    @Value("${ws.reply:/reply}")
     private String wsReply;
 
     @Autowired

@@ -24,6 +24,9 @@ Spring session is maintained during websocket connection through HandshakeInterc
 For every command a CommandStrategy is created, depending on the command entered by the client, system identifies the entered strategy and execute the method accordingly
 It will be easy to add more commands in future by using that strategy.
 
+### HighLights
+All info messages are configurable
+
 ## References
 * [A Guide to the Java API for WebSocket](https://www.baeldung.com/java-websockets)
 * [Creating a WebSocket Server with the Java API for WebSockets](https://www.nexmo.com/blog/2018/10/22/create-websocket-server-java-api-dr)

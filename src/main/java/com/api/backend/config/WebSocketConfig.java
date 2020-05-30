@@ -10,14 +10,14 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
-
-    @Value("${ws.handshake.endpoint}")
+    
+    @Value("${ws.handshake.endpoint:/ws-endpoint}")
     private String wsHandshakeEndpoint;
 
-    @Value("${ws.topic}")
+    @Value("${ws.topic:/topic}")
     private String wsTopic;
 
-    @Value("${ws.prefix}")
+    @Value("${ws.prefix:/app}")
     private String wsPrefix;
 
     @Override
