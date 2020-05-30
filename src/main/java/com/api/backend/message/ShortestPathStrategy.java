@@ -3,12 +3,12 @@ package com.api.backend.message;
 import com.api.backend.graph.Graph;
 import com.api.backend.model.Command;
 
-public class ShortestPathStraregy implements CommandStrategy {
+public class ShortestPathStrategy implements CommandStrategy {
     @Override
     public String executeCommand(Graph graph, Command command) {
-        String[] addCommandLiterals = command.getName().split("\\s");
-        if(addCommandLiterals.length==4) {
-            int returnCost = graph.shortestPath(addCommandLiterals[2], addCommandLiterals[3]);
+        String[] keys = command.getName().split("\\s");
+        if(keys.length==4) {
+            int returnCost = graph.shortestPath(keys[2], keys[3]);
             if(returnCost==Integer.MAX_VALUE) {
                 return "ERROR: NODE NOT FOUND";
             }

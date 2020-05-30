@@ -6,9 +6,9 @@ import com.api.backend.model.Command;
 public class RemoveEdgeStrategy implements CommandStrategy {
     @Override
     public String executeCommand(Graph graph, Command command) {
-        String[] addCommandLiterals = command.getName().split("\\s");
-        if(addCommandLiterals.length==4) {
-            return graph.removeEdge(addCommandLiterals[2], addCommandLiterals[3]);
+        String[] keys = command.getName().split("\\s");
+        if(keys.length==4) {
+            return graph.removeEdge(keys[2], keys[3]);
         }
         return "SORRY, I DID NOT UNDERSTAND THAT";
     }

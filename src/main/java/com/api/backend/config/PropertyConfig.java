@@ -6,26 +6,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PropertyConfig {
 
-    @Value("${client.introduction}")
-    private String clientIntroduction;
+    @Value("${client.introduction:i am}")
+    private String introduceId;
 
     @Value("${client.welcome: Hi! }")
-    private String welcomeMessage;
+    private String welcomeId;
 
-    @Value("${client.exit}")
-    private String clientExit;
+    @Value("${client.exit:bye}")
+    private String exitId;
 
-    @Value("${add.node}")
-    private String addNode;
+    @Value("${add.node.id:add node (.*)}")
+    private String addNodeId;
 
-    @Value("${add.edge}")
-    private String addEdge;
+    @Value("${remove.node.id:add node (.*)}")
+    private String rmNodeId;
 
-    @Value("${remove.node}")
-    private String removeNode;
+    @Value("${add.edge.id:add node (.*)}")
+    private String addEdgeId;
 
-    @Value("${remove.edge}")
-    private String removeEdge;
+    @Value("${remove.edge.id:add node (.*)}")
+    private String rmEdgeId;
 
     @Value("${shortest.path}")
     private String shortestPath;
@@ -33,8 +33,8 @@ public class PropertyConfig {
     @Value("${closer.than}")
     private String closerThan;
 
-    @Value("${unknown.command}")
-    private String unknownCommand;
+    @Value("${sorry.message: SORRY, I DID NOT UNDERSTAND THAT}")
+    private String sorryInfo;
 
     @Value("${graph.error:ERROR}")
     private String errorLabel;
@@ -81,32 +81,32 @@ public class PropertyConfig {
     @Value("${message.info.removing.edge:Removing an edge}")
     private String removingEdgeInfo;
 
-    public String getWelcomeMessage() {
-        return welcomeMessage;
+    public String getWelcomeId() {
+        return welcomeId;
     }
 
-    public String getClientIntroduction() {
-        return clientIntroduction;
+    public String getIntroduceId() {
+        return introduceId;
     }
 
-    public String getClientExit() {
-        return clientExit;
+    public String getExitId() {
+        return exitId;
     }
 
-    public String getAddNode() {
-        return addNode;
+    public String getAddNodeId() {
+        return addNodeId;
     }
 
-    public String getAddEdge() {
-        return addEdge;
+    public String getAddEdgeId() {
+        return addEdgeId;
     }
 
-    public String getRemoveNode() {
-        return removeNode;
+    public String getRmNodeId() {
+        return rmNodeId;
     }
 
-    public String getRemoveEdge() {
-        return removeEdge;
+    public String getRmEdgeId() {
+        return rmEdgeId;
     }
 
     public String getShortestPath() {
@@ -117,8 +117,8 @@ public class PropertyConfig {
         return closerThan;
     }
 
-    public String getUnknownCommand() {
-        return unknownCommand;
+    public String getSorryInfo() {
+        return sorryInfo;
     }
 
     public String getErrorLabel() {

@@ -13,28 +13,39 @@ Since the info for session is specific and should not be broadcasted to the subs
 * The 'Hi, I am <name>' will be also treated same as 'I am <name>' or 'Hola, I am <name>' using regex
 * Look for phase1.png for sample run screen for phase 1
 
-### STOMP
+## Phase 2,3,4,5
+### Handling commands entered by the customer.
+Since all these phases are based on the client server communication, and need bidirectional communications so we have used
+The WebSocket API through STOMP
+The STOMP protocol is commonly used inside a web socket when a web app needs to support bidirectional communication with a web server.
+
+#### STOMP
 * Simple Text Oriented Message Protocol is used for message-oriented middleware communications. It provides an interoperable wire format that allows STOMP clients to talk with any message broker supporting the protocol.
 * The service will accept messages(ClientCommand.java) that contain a 'command'
-* The service will process it by creating a (ServerReply.java) and will publish that reply on a queue to which the client is subscribed. 
-
-### CommandController.java
+* The service will process it by creating a (ServerReply.java) and will publish that reply on a topic to which the client is subscribed. 
+##### CommandController.java
 * This controller receives the client messages and send a reply message back.
 * The @MessageMapping annotation ensures that, if a message is sent to the /listen destination, the getUCommand(ClientCommand clientCommand) method is called
 * The return value is broadcasted to all subscribers of /topic/communication, as specified in the @SendTo annotation.
-
-### WebSocketConfig
+##### WebSocketConfig
 Configured Spring for WebSocket and STOMP messaging
-
-### How Spring session is maintained
-Spring session is maintained during websocket connection through HandshakeInterceptor. 
-
-### How all commands are handled
+##### How all commands are handled
 For every command a CommandStrategy is created, depending on the command entered by the client, system identifies the entered strategy and execute the method accordingly
 It will be easy to add more commands in future by using that strategy.
 
+## Phase 2
+### ADD/REMOVE NODE EDGE: These commands are for building a directed grap
+Node Tag are case insensitive, X and x are considered same node
+* Look for phase2.png for sample run screen for phase 2
+
+## Phase 3
+### Finds the shortest (weighted) path from node <X> to node <Y>.
+* Look for phase3.png for sample run screen for phase 3
+
 ### HighLights
 All info messages are configurable
+All commands are case insensitive and also support multiple whitespaces between the command (If by mistake someone enters the extra space)
+
 
 ## References
 * [A Guide to the Java API for WebSocket](https://www.baeldung.com/java-websockets)

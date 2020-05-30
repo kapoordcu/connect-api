@@ -52,6 +52,7 @@ function saveIntoLocalStorage() {
 function calculateTimestamp() {
     return new Date().getTime();
 }
+
 function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();

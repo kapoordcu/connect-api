@@ -28,18 +28,20 @@ public class CommandService {
     }
 
     private void fillCommandMap() {
-        commandMap.put(config.getClientIntroduction(), new ClientWelcomeStrategy());
-        commandMap.put(config.getClientExit(), new ClientExitStrategy());
-        commandMap.put(config.getAddNode(), new AddNodeStrategy());
-        commandMap.put(config.getAddEdge(), new AddEdgeStrategy());
-        commandMap.put(config.getRemoveNode(), new RemoveNodeStrategy());
-        commandMap.put(config.getRemoveEdge(), new RemoveEdgeStrategy());
-        commandMap.put(config.getShortestPath(), new ShortestPathStraregy());
-        commandMap.put(config.getCloserThan(), new WeightCommandStrategy());
+        commandMap.put(config.getIntroduceId(), new ClientWelcomeStrategy());
+        commandMap.put(config.getExitId(), new ClientExitStrategy());
+        commandMap.put(config.getAddNodeId(), new AddNodeStrategy());
+        commandMap.put(config.getAddEdgeId(), new AddEdgeStrategy());
+        commandMap.put(config.getRmNodeId(), new RemoveNodeStrategy());
+        commandMap.put(config.getRmEdgeId(), new RemoveEdgeStrategy());
+        commandMap.put(config.getShortestPath(), new ShortestPathStrategy());
+        commandMap.put(config.getCloserThan(), new CloserThanXStrategy());
     }
 
     public String sendMessageToClient(Command command) {
-        CommandStrategy strategy = identifyValidCommand(command.getName());
+        String commandText = command.getName().trim().toLowerCase().replaceAll("\\s+", " ");
+        command.setName(commandText);
+        CommandStrategy strategy = identifyValidCommand(commandText);
         commandContext.setStrategy(strategy);
         return strategy.executeCommand(graph, command);
     }
