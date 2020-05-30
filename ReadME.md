@@ -42,10 +42,21 @@ Node Tag are case insensitive, X and x are considered same node
 ### Finds the shortest (weighted) path from node <X> to node <Y>.
 * Look for phase3.png for sample run screen for phase 3
 
+## Phase 4
+### NOT IMPLEMENTED BECAUSE OF TIME
+
+## Phases 5 & 6
+### open multiple sessions at the same time, all adding and removing nodes and edges.
+* Look for phase5.png for sample run screen for phase 5
+* different UUIDs for two clients
+
 ### HighLights
 All info messages are configurable
 All commands are case insensitive and also support multiple whitespaces between the command (If by mistake someone enters the extra space)
 
+### what is not implemented
+phase 4 for closer than is not implemented
+The automatic inactivity check of 30 seconds is not implemented
 
 ## References
 * [A Guide to the Java API for WebSocket](https://www.baeldung.com/java-websockets)

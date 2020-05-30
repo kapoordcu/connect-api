@@ -74,6 +74,9 @@ function sendCommand() {
                 Store.setSessionId("name", keys[i+2]);
             }
         }
+    } else if(message.toLowerCase().includes("bye")) {
+        disconnect();
+        disableCommandButton();
     }
     stompClient.send("/app/listen", {}, JSON.stringify({'name': $("#name").val()}));
 }
